@@ -1,36 +1,46 @@
 pkgname=psst-git-bin
 _pkgname="psst"
-pkgver=r570.8b9f719
-pkgrel=3
+pkgver=r574.2e2a13f
+pkgrel=4
 pkgdesc="Fast and multi-platform Spotify client with native GUI (binary git version)."
-arch=("x86_64")
+arch=("x86_64" "aarch64")
 url="https://github.com/jpochyla/psst"
 license=('MIT')
 makedepends=('unzip')
 depends=('gtk3' 'openssl')
 provides=("psst")
 conflicts=("psst" "psst-git")
+
+if [[ "${CARCH}" == "x86_64" ]]; then
+    nightly_link="https://nightly.link/jpochyla/psst/workflows/build/main/psst-gui-x86_64-unknown-linux-gnu.zip"
+elif [[ "${CARCH}" == "aarch64" ]]; then
+    nightly_link="https://nightly.link/jpochyla/psst/workflows/build/main/psst-gui-aarch64-unknown-linux-gnu.zip"
+else
+    echo "Unsupported architecture: ${CARCH}"
+    exit 1
+fi
+
 source=(
-        "https://nightly.link/jpochyla/psst/workflows/build/main/psst-gui-x86_64-unknown-linux-gnu.zip"
-        "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_32.png"
-        "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_64.png"
-        "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_128.png"
-        "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_256.png"
-        "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_512.png"
-        "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo.svg"
-        "https://raw.githubusercontent.com/jpochyla/psst/main/.pkg/psst.desktop"
-        )
+    "${nightly_link}"
+    "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_32.png"
+    "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_64.png"
+    "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_128.png"
+    "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_256.png"
+    "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo_512.png"
+    "https://raw.githubusercontent.com/jpochyla/psst/main/psst-gui/assets/logo.svg"
+    "https://raw.githubusercontent.com/jpochyla/psst/main/.pkg/psst.desktop"
+)
 
 sha256sums=(
-            'SKIP'
-            '7b53df46ae46e3843f497ddc12bd47866b8b8933ba9102443c674630ce0b9e4e'
-	        'f74a037ecdb92ac4789bf23d0e0e936db8d2dd9c30a73179e862f0a7c26f9aa5'
-	        '6ec968ba0bc0f60ed1a798cc155d40f9839a37175d566dc658f6b30848f63dcd'
-	        'b4af1fcd4bf767a1da148e776ceb4ea4221ac359f7725aa0daa9bb4583479e7c'
-        	'da79acff7d35ef5c51ee6a516c852a4ad75e84ba83d3a0fbe789d677e627ebaf'
-        	'1f67253dd5d3a7d7bda2126240b51ef9ed16196bee85ce1342d4bad3d0af9d40'
-        	'8e933a0a2f191c3e91d7287e1fe6b177843da8cc4450c888e670f31f674dc13a'
-            )
+    'SKIP'
+    '7b53df46ae46e3843f497ddc12bd47866b8b8933ba9102443c674630ce0b9e4e'
+    'f74a037ecdb92ac4789bf23d0e0e936db8d2dd9c30a73179e862f0a7c26f9aa5'
+    '6ec968ba0bc0f60ed1a798cc155d40f9839a37175d566dc658f6b30848f63dcd'
+    'b4af1fcd4bf767a1da148e776ceb4ea4221ac359f7725aa0daa9bb4583479e7c'
+    'da79acff7d35ef5c51ee6a516c852a4ad75e84ba83d3a0fbe789d677e627ebaf'
+    '1f67253dd5d3a7d7bda2126240b51ef9ed16196bee85ce1342d4bad3d0af9d40'
+    '8e933a0a2f191c3e91d7287e1fe6b177843da8cc4450c888e670f31f674dc13a'
+)
 
 pkgver() {
     cd "${srcdir}"
@@ -42,7 +52,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}"
-    unzip -o psst-gui-x86_64-unknown-linux-gnu.zip
+    unzip -o "$(basename "${nightly_link}")"
 }
 
 package() {
@@ -61,7 +71,4 @@ package() {
     install -Dm644 "${srcdir}/logo_256.png" "${pkgdir}/usr/share/icons/hicolor/256x256/apps/psst-gui.png"
     install -Dm644 "${srcdir}/logo_512.png" "${pkgdir}/usr/share/icons/hicolor/512x512/apps/psst-gui.png"
     install -Dm644 "${srcdir}/logo.svg" "${pkgdir}/usr/share/icons/hicolor/scalable/apps/psst-gui.svg"
-
-    
-    
 }
